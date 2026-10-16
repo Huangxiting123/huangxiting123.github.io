@@ -1,10 +1,9 @@
 # 晰烁画流 · XishuoFlow
 
-黄晰霆与杨文烁联合开发的 Windows 电商海报工作流工具。
+XishuoFlow 团队开发的 Windows 电商海报工作流工具。
 
 - [访问官网与使用教程](https://xishuoflow.civilcake17.chatgpt.site)
 - [登录并下载 EXE](https://xishuoflow.civilcake17.chatgpt.site/login)
-- [GitHub Pages 版官网](https://huangxiting123.github.io/xishuoflow/)
 
 ## V0.7 工作流程
 
