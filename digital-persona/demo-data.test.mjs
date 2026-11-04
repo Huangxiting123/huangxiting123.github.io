@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {seedDemo,clearDemo} from './demo-data.mjs';
+const empty=()=>({profile:{name:''},memories:[],sources:[],contacts:[],messages:[],contextRevision:0});
+test('示例来源与记忆可追溯、私密且明确虚构',()=>{const s=empty();seedDemo(s);assert.equal(s.memories.length,3);assert.match(s.profile.bio,/虚构/);for(const m of s.memories){assert.equal(m.demo,true);assert.equal(m.visibility,'private');assert.equal(s.sources.find(x=>x.id===m.sourceId).text.slice(m.evidenceStart,m.evidenceEnd),m.evidenceQuote);}assert.throws(()=>seedDemo(s));});
+test('已有资料时拒绝覆盖，不改变现有记录',()=>{for(const key of ['memories','sources','contacts','messages']){const s=empty();s[key].push({id:'real'});const before=JSON.stringify(s);assert.throws(()=>seedDemo(s));assert.equal(JSON.stringify(s),before);}});
+test('清除示例保留新增真实资料与主动编辑保留的记录和出处',()=>{const s=empty();seedDemo(s);s.profile={name:'真实姓名'};s.memories[0].demo=false;s.memories.push({id:'real',text:'真实记录'});s.sources.push({id:'real-source',text:'真实原文'});clearDemo(s);assert.equal(s.profile.name,'真实姓名');assert.equal(s.memories.length,2);assert.equal(s.sources.length,2);assert.ok(s.sources.some(x=>x.id===s.memories[0].sourceId));});
+test('没有示例时清除入口不改变已有聊天',()=>{const s=empty();s.messages=[{text:'真实聊天'}];const before=JSON.stringify(s);clearDemo(s);assert.equal(JSON.stringify(s),before);});

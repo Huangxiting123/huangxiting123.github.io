@@ -1,0 +1,7 @@
+data/
+*.zip
+desktop/build/
+desktop/*.exe
+desktop/build-info.json
+.env*
+*.token

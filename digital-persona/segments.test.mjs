@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {segmentSource} from './segments.mjs';
+test('分段保持原文和连续位置，不遗漏空白或表情',()=>{const text=('童年往事。\n'+ '爸爸教我骑车。'.repeat(30)+'😀').repeat(10);const rows=segmentSource(text,120);assert.equal(rows.map(x=>x.text).join(''),text);let pos=0;for(const row of rows){assert.equal(row.start,pos);assert.equal(row.text,text.slice(row.start,row.end));assert.ok(row.text.length<=120);assert.ok(!/[\uD800-\uDBFF]$/.test(row.text));pos=row.end;}assert.equal(pos,text.length);});
+test('优先段落和句子边界，不生成主题推断',()=>{const text='甲'.repeat(60)+'\n'+'乙'.repeat(80);const rows=segmentSource(text,100);assert.equal(rows[0].end,61);assert.equal(rows.length,2);assert.deepEqual(segmentSource(''),[]);assert.throws(()=>segmentSource('a',0));});

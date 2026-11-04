@@ -1,0 +1,46 @@
+# Place at .github/workflows/stillhere-release.yml after source publication approval.
+name: Stillhere Windows preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [stillhere-dev]
+    paths: ["digital-persona/**", ".github/workflows/stillhere-release.yml"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: digital-persona
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test
+        run: npm test
+      - name: Build
+        shell: pwsh
+        run: python desktop/build_exe.py (Get-Command node).Source
+      - name: Desktop self-test
+        shell: pwsh
+        run: |
+          $env:STILLHERE_HOME=Join-Path $env:RUNNER_TEMP 'stillhere-release-check'
+          Get-ChildItem Env:PERSONA_* | ForEach-Object { Remove-Item -LiteralPath ('Env:'+ $_.Name) }
+          $process=Start-Process -FilePath '.\desktop\Stillhere-Preview.exe' -ArgumentList '--self-test' -WindowStyle Hidden -PassThru -Wait
+          if($process.ExitCode -ne 0){ throw 'Desktop self-test failed' }
+          $result=Get-Content (Join-Path $env:STILLHERE_HOME 'self-test.json') -Raw | ConvertFrom-Json
+          if(-not $result.ok){ throw 'Desktop self-test failed' }
+      - name: Publish preview
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version=(Get-Content package.json -Raw | ConvertFrom-Json).version
+          $tag="stillhere-v$version-run${{ github.run_number }}"
+          gh release create $tag desktop/Stillhere-Preview.exe desktop/build-info.json --target '${{ github.sha }}' --prerelease --title "Stillhere $version" --notes-file desktop/RELEASE-NOTES.md
+          if($LASTEXITCODE -ne 0){ throw 'Release publication failed' }

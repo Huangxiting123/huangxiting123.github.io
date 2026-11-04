@@ -1,0 +1,13 @@
+{
+  "name": "stillhere",
+  "version": "0.7.0-dev.10",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests.mjs integration.test.mjs extraction.test.mjs jobs.test.mjs quality.test.mjs retrieval.test.mjs providers.test.mjs indexed.test.mjs dialogue-guard.test.mjs speech.test.mjs segments.test.mjs segmented-extraction.test.mjs demo-data.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
