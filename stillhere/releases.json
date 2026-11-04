@@ -1,0 +1,90 @@
+{
+  "product": "续在 STILLHERE",
+  "releases": [
+    {
+      "version": "v0.5.0",
+      "title": "记忆质量审核与语义检索适配器",
+      "date": "2026-11-04",
+      "changes": [
+        "重复与同事项冲突审核，保留原始来源",
+        "可选语义检索接口与关键词回退",
+        "14项自动化测试通过；真实供应商与新增界面验收待完成"
+      ],
+      "limitations": "本地开发源码包，需要 Node.js 22+。未接入真实模型供应商、声音复刻或数字人视频通话；详细验证范围见包内说明。",
+      "file": null,
+      "notes": "./releases/v0.5.0.md",
+      "sha256": "511ffe5aec47a3a99a5054442e8d7708bdde29ed75817dcb911949e5064cf850",
+      "size": 43106,
+      "archiveName": "stillhere-v0.5.0.zip",
+      "publicDownload": false
+    },
+    {
+      "version": "v0.4.0",
+      "title": "让对话成为可追溯的记忆来源",
+      "date": "2026-11-04",
+      "changes": [
+        "成功对话的用户原话自动归档",
+        "持久化抽取队列、暂停、重试与重启恢复",
+        "9项自动化测试通过；新增界面验收待完成"
+      ],
+      "limitations": "本地开发源码包，需要 Node.js 22+。未接入真实模型供应商、声音复刻或数字人视频通话；详细验证范围见包内说明。",
+      "file": null,
+      "notes": "./releases/v0.4.0.md",
+      "sha256": "153da2b22756a4b03f3d36f5afbac52c34e0a664c1239a4312e26cf8484990f2",
+      "size": 34344,
+      "archiveName": "stillhere-v0.4.0.zip",
+      "publicDownload": false
+    },
+    {
+      "version": "v0.3.0",
+      "title": "从访谈原文到待确认记忆",
+      "date": "2026-11-04",
+      "changes": [
+        "访谈来源管理、原文证据与待确认队列",
+        "联系人编辑与凭证轮换",
+        "5项自动化测试通过；模型使用模拟服务验证"
+      ],
+      "limitations": "本地开发源码包，需要 Node.js 22+。未接入真实模型供应商、声音复刻或数字人视频通话；详细验证范围见包内说明。",
+      "file": null,
+      "notes": "./releases/v0.3.0.md",
+      "sha256": "bac0b16e15cff391ae315f1a2bcb2586489b4b47e3dfe8c0d33e9fdb352432a4",
+      "size": 27509,
+      "archiveName": "stillhere-v0.3.0.zip",
+      "publicDownload": false
+    },
+    {
+      "version": "v0.2.0",
+      "title": "为记忆建立关系与边界",
+      "date": "2026-11-04",
+      "changes": [
+        "联系人访问凭证与记忆分享范围",
+        "记忆编辑、删除、状态与版本冲突检查",
+        "3项自动化测试通过；尚未接入音视频"
+      ],
+      "limitations": "本地开发源码包，需要 Node.js 22+。未接入真实模型供应商、声音复刻或数字人视频通话；详细验证范围见包内说明。",
+      "file": null,
+      "notes": "./releases/v0.2.0.md",
+      "sha256": "4b708c053766f9617754d20293f348881b3eb21fb452f80e6e08f948ff8c4d2b",
+      "size": 20419,
+      "archiveName": "stillhere-v0.2.0.zip",
+      "publicDownload": false
+    },
+    {
+      "version": "v0.1.0",
+      "title": "第一段记忆，从这里开始",
+      "date": "2026-11-04",
+      "changes": [
+        "人物档案、人工记忆录入与关键词检索",
+        "持久聊天记录与资料导出",
+        "本地基础开发版；尚未接入真实模型"
+      ],
+      "limitations": "本地开发源码包，需要 Node.js 22+。未接入真实模型供应商、声音复刻或数字人视频通话；详细验证范围见包内说明。",
+      "file": null,
+      "notes": "./releases/v0.1.0.md",
+      "sha256": "5fb5571cd2784d27bfcce567fdd78bf5edef4e959848b852060de3d47199ff5b",
+      "size": 8435,
+      "archiveName": "stillhere-v0.1.0.zip",
+      "publicDownload": false
+    }
+  ]
+}
