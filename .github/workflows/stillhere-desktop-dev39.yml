@@ -71,6 +71,6 @@ jobs:
           $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLower()
           "$hash  Stillhere-dev39-Setup-Windows-x64.exe" | Set-Content downloads/dev39-desktop/SHA256.txt -Encoding ascii
           gh release view stillhere-dev39-desktop *> $null
-          if ($LASTEXITCODE -ne 0) { gh release create stillhere-dev39-desktop --target "$env:GITHUB_SHA" --title '续在 dev39 · Windows桌面客户端与新版工作台' --prerelease --notes-file downloads/dev39-desktop/Stillhere-dev39-acceptance.md }
+          if ($LASTEXITCODE -ne 0) { gh release create stillhere-dev39-desktop --verify-tag --title '续在 dev39 · Windows桌面客户端与新版工作台' --prerelease --notes-file downloads/dev39-desktop/Stillhere-dev39-acceptance.md }
           gh release upload stillhere-dev39-desktop $installer downloads/dev39-desktop/Stillhere-dev39-acceptance.md downloads/dev39-desktop/SHA256.txt downloads/dev39-desktop/Windows-client-test.json downloads/dev39-desktop/Windows-client-preview.png --clobber
           if ($LASTEXITCODE -ne 0) { throw 'Release upload failed' }
