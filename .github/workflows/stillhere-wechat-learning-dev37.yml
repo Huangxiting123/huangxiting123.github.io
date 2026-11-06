@@ -1,0 +1,26 @@
+name: Publish WeChat learning dev37
+on:
+  push:
+    branches: [stillhere-wechat-learning-dev37]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev37-wechat-learning
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev37-wechat-learning >/dev/null 2>&1; then
+            gh release create stillhere-dev37-wechat-learning --target "$GITHUB_SHA" --title "dev37 微信语音文字投喂与稳定性" --prerelease --notes-file downloads/dev37-wechat-learning/README.md
+          fi
+          gh release upload stillhere-dev37-wechat-learning downloads/dev37-wechat-learning/Stillhere-dev37-WeChat-learning-update.zip downloads/dev37-wechat-learning/Stillhere-dev37-WeChat-learning-acceptance.md downloads/dev37-wechat-learning/SHA256.txt --clobber
