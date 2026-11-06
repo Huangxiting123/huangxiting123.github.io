@@ -1,0 +1,26 @@
+name: Publish E-drive model storage fix
+on:
+  push:
+    branches: [stillhere-models-e-drive-fix]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify patch
+        working-directory: downloads/dev32-e1
+        run: sha256sum --check Stillhere-dev32-E-drive-fix-SHA256.txt
+      - name: Publish patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev32-e1 >/dev/null 2>&1; then
+            gh release create stillhere-dev32-e1 --target "$GITHUB_SHA" --title "dev32-E1：模型安装到E盘修复" --prerelease --notes-file downloads/dev32-e1/README.md
+          fi
+          gh release upload stillhere-dev32-e1 downloads/dev32-e1/Stillhere-dev32-E-drive-fix.zip downloads/dev32-e1/Stillhere-dev32-E-drive-acceptance.md downloads/dev32-e1/Stillhere-dev32-E-drive-fix-SHA256.txt --clobber
