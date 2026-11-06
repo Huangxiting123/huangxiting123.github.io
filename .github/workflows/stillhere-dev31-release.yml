@@ -1,0 +1,29 @@
+name: Publish STILLHERE dev31 package
+on:
+  push:
+    branches: [stillhere-downloads-dev31]
+permissions:
+  contents: write
+concurrency:
+  group: stillhere-dev31-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Verify and reassemble prepared package
+        run: python3 downloads/dev31/assemble.py
+      - name: Publish verified prerelease files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev31 >/dev/null 2>&1; then
+            gh release create stillhere-dev31 --target "$GITHUB_SHA" --title "续在 STILLHERE dev.31：转写准确性改进" --prerelease --notes-file downloads/dev31/release-notes.md
+          fi
+          gh release upload stillhere-dev31 downloads/dev31/dist/Stillhere-dev31-Windows-x64.zip downloads/dev31/Stillhere-dev31-acceptance.md downloads/dev31/Stillhere-dev31-benchmark.md downloads/dev31/Stillhere-dev31-SHA256.txt --clobber

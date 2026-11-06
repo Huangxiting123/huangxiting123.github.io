@@ -1,0 +1,37 @@
+{
+  "filename": "Stillhere-dev31-Windows-x64.zip",
+  "bytes": 469671153,
+  "sha256": "1dd0775427221cc862ce5af2004bcbdfab500a81f09e1478c903b0b746662fc4",
+  "parts": [
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part01",
+      "bytes": 83886080,
+      "sha256": "b14acdad02370baa92cdb1b63f4bf5864f86c20058054369bb72561f9ae1a876"
+    },
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part02",
+      "bytes": 83886080,
+      "sha256": "b7adec944258adb2ae0c154753bb1c415e14ea05bba4dc11cad479933ce1a33e"
+    },
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part03",
+      "bytes": 83886080,
+      "sha256": "db4133c1211463a1b12011ecedeb1e500944590be5ec6ba8a10dcc732bff063c"
+    },
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part04",
+      "bytes": 83886080,
+      "sha256": "380bd401237ab7c82a2b547903fa2cac8c3a4089ebadb09462a8f33969cf9f5a"
+    },
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part05",
+      "bytes": 83886080,
+      "sha256": "8bc132b308536378d02a2fbe466a718aa76385411ccf19f2341998a50df50f24"
+    },
+    {
+      "name": "Stillhere-dev31-Windows-x64.zip.part06",
+      "bytes": 50240753,
+      "sha256": "f079c9668f86871b4dd964864e77d3fa80f472731fbac50c0c7e9578ede34558"
+    }
+  ]
+}
