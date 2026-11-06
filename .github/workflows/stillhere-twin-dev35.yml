@@ -1,0 +1,26 @@
+name: Publish twin dev35
+on:
+  push:
+    branches: [stillhere-twin-dev35]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev35-twin
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev35-twin >/dev/null 2>&1; then
+            gh release create stillhere-dev35-twin --target "$GITHUB_SHA" --title "dev35 AI分身培养与生活情境" --prerelease --notes-file downloads/dev35-twin/README.md
+          fi
+          gh release upload stillhere-dev35-twin downloads/dev35-twin/Stillhere-dev35-twin-update.zip downloads/dev35-twin/Stillhere-dev35-twin-acceptance.md downloads/dev35-twin/SHA256.txt --clobber
