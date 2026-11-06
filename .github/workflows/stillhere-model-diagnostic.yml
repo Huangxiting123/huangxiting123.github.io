@@ -1,0 +1,26 @@
+name: Publish model diagnostic
+on:
+  push:
+    branches: [stillhere-model-diagnostic]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev32-e4
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev32-e4 >/dev/null 2>&1; then
+            gh release create stillhere-dev32-e4 --target "$GITHUB_SHA" --title "dev32-E4 本机文字模型检查" --prerelease --notes-file downloads/dev32-e4/README.md
+          fi
+          gh release upload stillhere-dev32-e4 downloads/dev32-e4/Stillhere-dev32-model-diagnostic.zip downloads/dev32-e4/Stillhere-dev32-model-diagnostic-acceptance.md downloads/dev32-e4/SHA256.txt --clobber
