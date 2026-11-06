@@ -1,0 +1,26 @@
+name: Publish WeChat voice dev38
+on:
+  push:
+    branches: [stillhere-wechat-voice-dev38]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev38-wechat-voice
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev38-wechat-voice >/dev/null 2>&1; then
+            gh release create stillhere-dev38-wechat-voice --target "$GITHUB_SHA" --title "dev38 微信本人语音回复实验版" --prerelease --notes-file downloads/dev38-wechat-voice/README.md
+          fi
+          gh release upload stillhere-dev38-wechat-voice downloads/dev38-wechat-voice/Stillhere-dev38-WeChat-voice-update.zip downloads/dev38-wechat-voice/Stillhere-dev38-WeChat-voice-acceptance.md downloads/dev38-wechat-voice/SHA256.txt --clobber
