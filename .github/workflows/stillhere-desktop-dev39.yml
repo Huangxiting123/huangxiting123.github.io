@@ -2,6 +2,9 @@ name: Build Stillhere desktop dev39
 on:
   push:
     branches: [stillhere-desktop-dev39]
+concurrency:
+  group: stillhere-desktop-dev39
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -45,12 +48,17 @@ jobs:
           if ($proc.ExitCode -ne 0) { throw 'Installer failed' }
           $env:STILLHERE_LOCAL_HOME = "$env:RUNNER_TEMP\stillhere-client-fixture"
           New-Item -ItemType Directory -Force $env:STILLHERE_LOCAL_HOME | Out-Null
+          New-Item -ItemType Directory -Force "$env:STILLHERE_LOCAL_HOME\data" | Out-Null
+          @{profile=@{name='CLIENT_FIXTURE';bio='';style=''};memories=@(@{id='fixture-memory';text='CLIENT_PERSISTENCE_FIXTURE';status='confirmed';visibility='private'});messages=@()} | ConvertTo-Json -Depth 8 | Set-Content "$env:STILLHERE_LOCAL_HOME\data\persona.json" -Encoding utf8
+          ('a' * 64) | Set-Content "$env:STILLHERE_LOCAL_HOME\owner.token" -Encoding ascii
           $proc = Start-Process "$install\StillhereClient.exe" -ArgumentList '--smoke-test' -PassThru
           if (!$proc.WaitForExit(120000)) { Stop-Process -Id $proc.Id -Force; throw 'Client startup timeout' }
           $report = "$env:STILLHERE_LOCAL_HOME\desktop-smoke-result.json"
           if (!(Test-Path $report)) { throw 'Missing packaged client report' }
           $result = Get-Content $report -Raw | ConvertFrom-Json
           if (!$result.ok) { throw "Client check failed: $($result.error)" }
+          if ((Get-Content "$env:STILLHERE_LOCAL_HOME\owner.token" -Raw).Trim() -ne ('a' * 64)) { throw 'Existing owner credential changed' }
+          if (Test-Path "$env:STILLHERE_LOCAL_HOME\running-server.json") { throw 'Server descriptor not cleaned on exit' }
           Copy-Item $report downloads/dev39-desktop/Windows-client-test.json
           Copy-Item "$env:STILLHERE_LOCAL_HOME\desktop-smoke.png" downloads/dev39-desktop/Windows-client-preview.png
       - name: Publish installer
