@@ -72,5 +72,10 @@ jobs:
           "$hash  Stillhere-dev42-Setup-Windows-x64.exe" | Set-Content downloads/dev42-registry/SHA256.txt -Encoding ascii
           gh release view stillhere-dev42-registry *> $null
           if ($LASTEXITCODE -ne 0) { gh release create stillhere-dev42-registry --verify-tag --title '续在 dev42 · 人物档案、记忆时间线与身份线索' --prerelease --notes-file downloads/dev42-registry/Stillhere-dev42-acceptance.md }
-          gh release upload stillhere-dev42-registry $installer downloads/dev42-registry/Stillhere-dev42-acceptance.md downloads/dev42-registry/SHA256.txt downloads/dev42-registry/Windows-client-test.json downloads/dev42-registry/Windows-client-preview.png --clobber
-          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed' }
+          $uploaded = $false
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            gh release upload stillhere-dev42-registry $installer downloads/dev42-registry/Stillhere-dev42-acceptance.md downloads/dev42-registry/SHA256.txt downloads/dev42-registry/Windows-client-test.json downloads/dev42-registry/Windows-client-preview.png --clobber
+            if ($LASTEXITCODE -eq 0) { $uploaded = $true; break }
+            if ($attempt -lt 3) { Start-Sleep -Seconds 10 }
+          }
+          if (!$uploaded) { throw 'Release upload failed after retries' }
