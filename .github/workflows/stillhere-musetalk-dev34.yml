@@ -1,0 +1,26 @@
+name: Publish MuseTalk dev34
+on:
+  push:
+    branches: [stillhere-musetalk-dev34]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev34-musetalk
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev34-musetalk >/dev/null 2>&1; then
+            gh release create stillhere-dev34-musetalk --target "$GITHUB_SHA" --title "dev34 本机真人口型视频实验版" --prerelease --notes-file downloads/dev34-musetalk/README.md
+          fi
+          gh release upload stillhere-dev34-musetalk downloads/dev34-musetalk/Stillhere-dev34-musetalk-update.zip downloads/dev34-musetalk/Stillhere-dev34-musetalk-acceptance.md downloads/dev34-musetalk/SHA256.txt --clobber
