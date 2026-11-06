@@ -1,0 +1,26 @@
+name: Publish WeChat connectivity probe
+on:
+  push:
+    branches: [stillhere-wechat-probe]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/wechat-probe
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-wechat-probe-v1 >/dev/null 2>&1; then
+            gh release create stillhere-wechat-probe-v1 --target "$GITHUB_SHA" --title "微信ClawBot文字收发验证工具" --prerelease --notes-file downloads/wechat-probe/README.md
+          fi
+          gh release upload stillhere-wechat-probe-v1 downloads/wechat-probe/Stillhere-WeChat-connectivity-test.zip downloads/wechat-probe/Stillhere-WeChat-acceptance.md downloads/wechat-probe/SHA256.txt --clobber
