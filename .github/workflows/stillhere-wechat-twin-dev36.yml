@@ -1,0 +1,26 @@
+name: Publish WeChat twin dev36
+on:
+  push:
+    branches: [stillhere-wechat-twin-dev36]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev36-wechat-twin
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev36-wechat-twin >/dev/null 2>&1; then
+            gh release create stillhere-dev36-wechat-twin --target "$GITHUB_SHA" --title "dev36 微信文字分身" --prerelease --notes-file downloads/dev36-wechat-twin/README.md
+          fi
+          gh release upload stillhere-dev36-wechat-twin downloads/dev36-wechat-twin/Stillhere-dev36-WeChat-twin-update.zip downloads/dev36-wechat-twin/Stillhere-dev36-WeChat-twin-acceptance.md downloads/dev36-wechat-twin/SHA256.txt --clobber
