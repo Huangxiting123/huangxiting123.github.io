@@ -1,0 +1,26 @@
+name: Publish model bridge fix
+on:
+  push:
+    branches: [stillhere-model-bridge-fix]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev32-e3
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev32-e3 >/dev/null 2>&1; then
+            gh release create stillhere-dev32-e3 --target "$GITHUB_SHA" --title "dev32-E3 文字模型桥接修复" --prerelease --notes-file downloads/dev32-e3/README.md
+          fi
+          gh release upload stillhere-dev32-e3 downloads/dev32-e3/Stillhere-dev32-model-bridge-fix.zip downloads/dev32-e3/Stillhere-dev32-model-bridge-acceptance.md downloads/dev32-e3/SHA256.txt --clobber
