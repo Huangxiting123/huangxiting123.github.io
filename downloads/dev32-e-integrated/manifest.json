@@ -1,0 +1,37 @@
+{
+  "filename": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip",
+  "bytes": 469712001,
+  "sha256": "fc440dfad0a13f617ce9273278458056057e5d06ddfc1e6f872a747576916af6",
+  "parts": [
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part01",
+      "bytes": 83886080,
+      "sha256": "6f674f63dceaabc6d4a7a6003867fb2b654d103e4327e0983ba1a3f34ca2054c"
+    },
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part02",
+      "bytes": 83886080,
+      "sha256": "45f009660621597a37b0c874292dcd1bc42f610c696607897b86cf1da30d3d51"
+    },
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part03",
+      "bytes": 83886080,
+      "sha256": "e30d1bd312742c01882edd6297681d68021e40726be0ef80f422d908355a799a"
+    },
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part04",
+      "bytes": 83886080,
+      "sha256": "86522cf930884d4fc1d217ea05816482078cd4dd2d6ad8ef5e232c100fd12135"
+    },
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part05",
+      "bytes": 83886080,
+      "sha256": "8d02ecae537e45bfc7259d7a045c4b593bb40c85c5f343dd18cee231c098ba2a"
+    },
+    {
+      "name": "Stillhere-dev32-E-drive-integrated-Windows-x64.zip.part06",
+      "bytes": 50281601,
+      "sha256": "67b242a812a0cb6e491155c8a16cdb9271079429d292ef2c15bf2324c4659192"
+    }
+  ]
+}
