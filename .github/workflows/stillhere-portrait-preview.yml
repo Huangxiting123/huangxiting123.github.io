@@ -1,0 +1,26 @@
+name: Publish portrait preview
+on:
+  push:
+    branches: [stillhere-portrait-preview]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify
+        working-directory: downloads/dev33-portrait
+        run: sha256sum --check SHA256.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view stillhere-dev33-portrait >/dev/null 2>&1; then
+            gh release create stillhere-dev33-portrait --target "$GITHUB_SHA" --title "dev33 本人形象与静态视频样片" --prerelease --notes-file downloads/dev33-portrait/README.md
+          fi
+          gh release upload stillhere-dev33-portrait downloads/dev33-portrait/Stillhere-dev33-portrait-update.zip downloads/dev33-portrait/Stillhere-dev33-portrait-acceptance.md downloads/dev33-portrait/SHA256.txt --clobber
