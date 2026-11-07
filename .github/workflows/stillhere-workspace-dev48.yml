@@ -1,0 +1,81 @@
+name: Build Stillhere workspace dev48
+on:
+  push:
+    branches: [stillhere-workspace-dev48]
+concurrency:
+  group: stillhere-workspace-dev48
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare backend and integrated runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Invoke-WebRequest 'https://github.com/Huangxiting123/huangxiting123.github.io/releases/download/stillhere-dev32-e-integrated/Stillhere-dev32-E-drive-integrated-Windows-x64.zip' -OutFile base.zip
+          Expand-Archive base.zip base
+          Expand-Archive downloads/dev48-workspace/Stillhere-dev48-desktop-source.zip source
+          New-Item -ItemType Directory -Force source/Stillhere/desktop-client/backend | Out-Null
+          robocopy source/Stillhere source/Stillhere/desktop-client/backend /E /XD desktop-client .git node_modules /NFL /NDL /NJH /NJS
+          if ($LASTEXITCODE -ge 8) { throw 'Backend copy failed' }
+          Copy-Item base/Stillhere/runtime source/Stillhere/desktop-client/backend -Recurse -Force
+          Copy-Item source/Stillhere/runtime/setup-tools source/Stillhere/desktop-client/backend/runtime -Recurse -Force
+          $global:LASTEXITCODE = 0
+      - name: Build installer
+        working-directory: source/Stillhere/desktop-client
+        shell: pwsh
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          npm ci --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }
+          npm run dist
+          if ($LASTEXITCODE -ne 0) { throw 'Desktop packaging failed' }
+      - name: Install and test packaged Windows client
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = Resolve-Path source/Stillhere/desktop-client/dist/Stillhere-dev48-Setup-Windows-x64.exe
+          $install = "$env:RUNNER_TEMP\Stillhere-Client"
+          $proc = Start-Process $installer -ArgumentList @('/S', "/D=$install") -PassThru -Wait
+          if ($proc.ExitCode -ne 0) { throw 'Installer failed' }
+          $env:STILLHERE_LOCAL_HOME = "$env:RUNNER_TEMP\stillhere-client-fixture"
+          New-Item -ItemType Directory -Force $env:STILLHERE_LOCAL_HOME | Out-Null
+          New-Item -ItemType Directory -Force "$env:STILLHERE_LOCAL_HOME\data" | Out-Null
+          @{profile=@{name='CLIENT_FIXTURE';bio='';style=''};memories=@(@{id='fixture-memory';text='CLIENT_PERSISTENCE_FIXTURE';status='confirmed';visibility='private'});messages=@()} | ConvertTo-Json -Depth 8 | Set-Content "$env:STILLHERE_LOCAL_HOME\data\persona.json" -Encoding utf8
+          ('a' * 64) | Set-Content "$env:STILLHERE_LOCAL_HOME\owner.token" -Encoding ascii
+          $proc = Start-Process "$install\StillhereClient.exe" -ArgumentList '--smoke-test' -PassThru
+          if (!$proc.WaitForExit(120000)) { Stop-Process -Id $proc.Id -Force; throw 'Client startup timeout' }
+          $report = "$env:STILLHERE_LOCAL_HOME\desktop-smoke-result.json"
+          if (!(Test-Path $report)) { throw 'Missing packaged client report' }
+          $result = Get-Content $report -Raw | ConvertFrom-Json
+          if (!$result.ok) { throw "Client check failed: $($result.error)" }
+          if ((Get-Content "$env:STILLHERE_LOCAL_HOME\owner.token" -Raw).Trim() -ne ('a' * 64)) { throw 'Existing owner credential changed' }
+          if (Test-Path "$env:STILLHERE_LOCAL_HOME\running-server.json") { throw 'Server descriptor not cleaned on exit' }
+          Copy-Item $report downloads/dev48-workspace/Windows-client-test.json
+          Copy-Item "$env:STILLHERE_LOCAL_HOME\desktop-smoke.png" downloads/dev48-workspace/Windows-client-preview.png
+      - name: Publish installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $installer = 'source/Stillhere/desktop-client/dist/Stillhere-dev48-Setup-Windows-x64.exe'
+          $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLower()
+          "$hash  Stillhere-dev48-Setup-Windows-x64.exe" | Set-Content downloads/dev48-workspace/SHA256.txt -Encoding ascii
+          gh release view stillhere-dev48-workspace *> $null
+          if ($LASTEXITCODE -ne 0) { gh release create stillhere-dev48-workspace --verify-tag --title '续在 dev48 · 统一工作台与交互改版' --prerelease --notes-file downloads/dev48-workspace/Stillhere-dev48-acceptance.md }
+          $uploaded = $false
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            gh release upload stillhere-dev48-workspace $installer downloads/dev48-workspace/Stillhere-dev48-acceptance.md downloads/dev48-workspace/SHA256.txt downloads/dev48-workspace/Windows-client-test.json downloads/dev48-workspace/Windows-client-preview.png downloads/dev48-workspace/Stillhere-dev48-interaction.mp4 --clobber
+            if ($LASTEXITCODE -eq 0) { $uploaded = $true; break }
+            if ($attempt -lt 3) { Start-Sleep -Seconds 10 }
+          }
+          if (!$uploaded) { throw 'Release upload failed after retries' }
